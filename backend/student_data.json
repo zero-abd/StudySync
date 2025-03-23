@@ -1,7 +1,7 @@
 {
   "email": "student@university.edu",
   "name": "Alex Johnson",
-  "semester": {
+  "semester_1": {
     "term": "Spring 2025",
     "courses": [
       {

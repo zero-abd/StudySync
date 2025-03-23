@@ -6,8 +6,75 @@ from dotenv import load_dotenv
 from prompts import get_prompt_for_task, BASE_SYSTEM_PROMPT
 from vertexai.generative_models import GenerativeModel, Part
 import vertexai
+import firebase_admin
+from firebase_admin import credentials, firestore
 
 load_dotenv()
+
+class FirebaseClient:
+    def __init__(self):
+        firebase_credentials = json.loads(os.getenv("FIREBASE_CREDENTIALS"))
+        cred = credentials.Certificate(firebase_credentials)
+        if not firebase_admin._apps:
+            firebase_admin.initialize_app(cred)
+        self.db = firestore.client()
+    
+    def save_user(self, email, name):
+        user_ref = self.db.collection("user-data").document(email)
+        user_ref.set({
+            "name": name
+        })
+        return {"success": True, "message": f"User {name} saved with email {email}"}
+    
+    def add_semester(self, email, semester_num, term_name):
+        user_ref = self.db.collection("user-data").document(email)
+        semester_key = f"semester_{semester_num}"
+        user_ref.update({
+            semester_key: {
+                "term": term_name,
+                "courses": []
+            }
+        })
+        return {"success": True, "message": f"Semester {semester_num} added for {email}"}
+    
+    def add_courses(self, email, semester_num, courses):
+        user_ref = self.db.collection("user-data").document(email)
+        semester_key = f"semester_{semester_num}"
+        
+        user_data = user_ref.get().to_dict()
+        if not user_data or semester_key not in user_data:
+            return {"success": False, "message": f"Semester {semester_num} not found for {email}"}
+        
+        user_ref.update({
+            f"{semester_key}.courses": courses
+        })
+        return {"success": True, "message": f"Courses added to semester {semester_num} for {email}"}
+    
+    def fetch_data(self, email):
+        user_ref = self.db.collection("user-data").document(email)
+        user_data = user_ref.get().to_dict()
+        
+        if not user_data:
+            return None
+        
+        result = {
+            "email": email,
+            "name": user_data.get("name", "")
+        }
+        
+        for key, value in user_data.items():
+            if key.startswith("semester_"):
+                result[key] = value
+        
+        return result
+    
+    def save_data_to_file(self, email):
+        data = self.fetch_data(email)
+        if data:
+            with open('student_data.json', 'w') as f:
+                json.dump(data, f, indent=2)
+            return {"success": True, "message": "Data saved to student_data.json"}
+        return {"success": False, "message": f"No data found for {email}"}
 
 class GeminiClient:
     def __init__(self):
@@ -90,6 +157,7 @@ class StudentAssistantAPI:
         self.app = Flask(__name__)
         CORS(self.app)
         self.gemini_client = GeminiClient()
+        self.firebase_client = FirebaseClient()
         self.setup_routes()
     
     def setup_routes(self):
@@ -97,6 +165,10 @@ class StudentAssistantAPI:
         self.app.route('/api/tasks', methods=['GET'])(self.get_tasks)
         self.app.route('/api/health', methods=['GET'])(self.health_check)
         self.app.route('/api/fetch_data', methods=['GET'])(self.fetch_data)
+        self.app.route('/api/save_user', methods=['POST'])(self.save_user)
+        self.app.route('/api/add_semester', methods=['POST'])(self.add_semester)
+        self.app.route('/api/add_courses', methods=['POST'])(self.add_courses)
+        self.app.route('/api/sync_data', methods=['POST'])(self.sync_data)
     
     def chat(self):
         try:
@@ -154,12 +226,88 @@ class StudentAssistantAPI:
     
     def fetch_data(self):
         try:
+            email = request.args.get('email')
+            if email:
+                data = self.firebase_client.fetch_data(email)
+                if data:
+                    return jsonify(data)
+                return jsonify({"error": f"No data found for {email}"}), 404
+            
             with open('student_data.json', 'r') as file:
                 data = json.load(file)
             return jsonify(data)
         except Exception as e:
             import traceback
-            print(f"Error fetching student data: {str(e)}")
+            print(f"Error fetching data: {str(e)}")
+            print(traceback.format_exc())
+            return jsonify({"error": str(e)}), 500
+    
+    def save_user(self):
+        try:
+            data = request.json
+            email = data.get('email')
+            name = data.get('name')
+            
+            if not email or not name:
+                return jsonify({"error": "Email and name are required"}), 400
+            
+            result = self.firebase_client.save_user(email, name)
+            return jsonify(result)
+        except Exception as e:
+            import traceback
+            print(f"Error saving user: {str(e)}")
+            print(traceback.format_exc())
+            return jsonify({"error": str(e)}), 500
+    
+    def add_semester(self):
+        try:
+            data = request.json
+            email = data.get('email')
+            semester_num = data.get('semester_num')
+            term_name = data.get('term_name')
+            
+            if not email or not semester_num or not term_name:
+                return jsonify({"error": "Email, semester_num, and term_name are required"}), 400
+            
+            result = self.firebase_client.add_semester(email, semester_num, term_name)
+            return jsonify(result)
+        except Exception as e:
+            import traceback
+            print(f"Error adding semester: {str(e)}")
+            print(traceback.format_exc())
+            return jsonify({"error": str(e)}), 500
+    
+    def add_courses(self):
+        try:
+            data = request.json
+            email = data.get('email')
+            semester_num = data.get('semester_num')
+            courses = data.get('courses')
+            
+            if not email or not semester_num or not courses:
+                return jsonify({"error": "Email, semester_num, and courses are required"}), 400
+            
+            result = self.firebase_client.add_courses(email, semester_num, courses)
+            return jsonify(result)
+        except Exception as e:
+            import traceback
+            print(f"Error adding courses: {str(e)}")
+            print(traceback.format_exc())
+            return jsonify({"error": str(e)}), 500
+    
+    def sync_data(self):
+        try:
+            data = request.json
+            email = data.get('email')
+            
+            if not email:
+                return jsonify({"error": "Email is required"}), 400
+            
+            result = self.firebase_client.save_data_to_file(email)
+            return jsonify(result)
+        except Exception as e:
+            import traceback
+            print(f"Error syncing data: {str(e)}")
             print(traceback.format_exc())
             return jsonify({"error": str(e)}), 500
     

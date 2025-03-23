@@ -5,3 +5,4 @@ google-genai==1.7.0
 gunicorn==21.2.0
 werkzeug==2.2.3
 vertexai==1.71.1
+firebase-admin==6.7.0
