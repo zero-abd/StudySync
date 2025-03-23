@@ -1,8 +1,8 @@
-import type React from "react"
+import { ThemeProvider } from "@/components/theme-provider"
 import type { Metadata } from "next"
 import { JetBrains_Mono } from "next/font/google"
+import type React from "react"
 import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
 
 const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"] })
 
