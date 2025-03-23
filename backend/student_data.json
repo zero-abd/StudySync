@@ -1,125 +1,261 @@
 {
-  "email": "student@university.edu",
-  "name": "Alex Johnson",
-  "semester_1": {
-    "term": "Spring 2025",
-    "courses": [
-      {
-        "name": "Data Structures and Algorithms",
-        "instructor_name": "Dr. Sarah Chen",
-        "grade": "A-",
-        "current_marks": {
+    "email": "student@university.edu",
+    "name": "Alex Johnson",
+    "semester_1": {
+      "term": "Spring 2025",
+      "courses": [
+        {
+          "name": "Data Structures and Algorithms",
+          "instructor_name": "Dr. Sarah Chen",
+          "grade": "A-",
+          "current_marks": {
             "assignment": 25,
             "quiz": 10,
             "exam": 30,
             "project": 15
+          },
+          "marks_distribution": {
+            "assignment": 30,
+            "quiz": 15,
+            "exam": 40,
+            "project": 15
+          },
+          "schedule": [
+            {
+              "date": "2025-01-15",
+              "type": "assignment",
+              "title": "Assignment 1: Array Implementation",
+              "description": "Implement basic array operations and analyze time complexity",
+              "time": "10:00 AM"
+            },
+            {
+              "date": "2025-01-29",
+              "type": "quiz",
+              "title": "Quiz 1: Time Complexity",
+              "description": "Basic quiz on algorithm analysis and time complexity notation",
+              "time": "2:00 PM"
+            },
+            {
+              "date": "2025-02-12",
+              "type": "assignment",
+              "title": "Assignment 2: Linked Lists",
+              "description": "Implement and optimize singly and doubly linked list operations",
+              "time": "10:00 AM"
+            },
+            {
+              "date": "2025-03-01",
+              "type": "exam",
+              "title": "Midterm Exam",
+              "description": "Covers all material from weeks 1-6",
+              "time": "9:00 AM"
+            },
+            {
+              "date": "2025-04-15",
+              "type": "project",
+              "title": "Final Project: Advanced Data Structures",
+              "description": "Implement and benchmark performance of multiple data structures",
+              "time": "1:00 PM"
+            },
+            {
+              "date": "2025-05-10",
+              "type": "exam",
+              "title": "Final Exam",
+              "description": "Comprehensive exam covering all course material",
+              "time": "10:00 AM"
+            }
+          ]
         },
-        "marks_distribution": {
-          "assignment": 30,
-          "quiz": 15,
-          "exam": 40,
-          "project": 15
-        },
-        "schedule": [
-          {
-            "date": "2025-01-15",
-            "type": "assignment",
-            "title": "Assignment 1: Array Implementation",
-            "description": "Implement basic array operations and analyze time complexity"
-          },
-          {
-            "date": "2025-01-29",
-            "type": "quiz",
-            "title": "Quiz 1: Time Complexity",
-            "description": "Basic quiz on algorithm analysis and time complexity notation"
-          },
-          {
-            "date": "2025-02-12",
-            "type": "assignment",
-            "title": "Assignment 2: Linked Lists",
-            "description": "Implement and optimize singly and doubly linked list operations"
-          },
-          {
-            "date": "2025-03-01",
-            "type": "exam",
-            "title": "Midterm Exam",
-            "description": "Covers all material from weeks 1-6"
-          },
-          {
-            "date": "2025-04-15",
-            "type": "project",
-            "title": "Final Project: Advanced Data Structures",
-            "description": "Implement and benchmark performance of multiple data structures"
-          },
-          {
-            "date": "2025-05-10",
-            "type": "exam",
-            "title": "Final Exam",
-            "description": "Comprehensive exam covering all course material"
-          }
-        ]
-      },
-      {
-        "name": "Software Engineering",
-        "instructor_name": "Prof. Michael Rodriguez",
-        "grade": "B+",
-        "current_marks": {
+        {
+          "name": "Software Engineering",
+          "instructor_name": "Prof. Michael Rodriguez",
+          "grade": "B+",
+          "current_marks": {
             "assignment": 20,
             "quiz": 10,
             "exam": 25,
             "project": 35
+          },
+          "marks_distribution": {
+            "assignment": 20,
+            "quiz": 10,
+            "exam": 30,
+            "project": 40
+          },
+          "schedule": [
+            {
+              "date": "2025-01-18",
+              "type": "assignment",
+              "title": "Assignment 1: Requirements Specification",
+              "description": "Create detailed requirements document for semester project",
+              "time": "11:00 AM"
+            },
+            {
+              "date": "2025-02-05",
+              "type": "assignment",
+              "title": "Assignment 2: System Design",
+              "description": "Create UML diagrams and system architecture documents",
+              "time": "9:00 AM"
+            },
+            {
+              "date": "2025-02-25",
+              "type": "quiz",
+              "title": "Quiz 1: Software Development Lifecycle",
+              "description": "Quiz on SDLC models and methodologies",
+              "time": "1:00 PM"
+            },
+            {
+              "date": "2025-03-10",
+              "type": "exam",
+              "title": "Midterm Exam",
+              "description": "Covers software development processes and design principles",
+              "time": "10:00 AM"
+            },
+            {
+              "date": "2025-04-01",
+              "type": "project",
+              "title": "Project Milestone 1",
+              "description": "First implementation milestone for semester project",
+              "time": "2:00 PM"
+            },
+            {
+              "date": "2025-05-01",
+              "type": "project",
+              "title": "Final Project Submission",
+              "description": "Complete working software with documentation",
+              "time": "12:00 PM"
+            },
+            {
+              "date": "2025-05-15",
+              "type": "exam",
+              "title": "Final Exam",
+              "description": "Comprehensive exam on all course topics",
+              "time": "3:00 PM"
+            }
+          ]
         },
-        "marks_distribution": {
-          "assignment": 20,
-          "quiz": 10,
-          "exam": 30,
-          "project": 40
+        {
+          "name": "Database Management Systems",
+          "instructor_name": "Dr. Emily Wong",
+          "grade": "A",
+          "current_marks": {
+            "assignment": 30,
+            "quiz": 15,
+            "exam": 40,
+            "project": 15
+          },
+          "marks_distribution": {
+            "assignment": 25,
+            "quiz": 20,
+            "exam": 35,
+            "project": 20
+          },
+          "schedule": [
+            {
+              "date": "2025-01-22",
+              "type": "assignment",
+              "title": "Assignment 1: Database Design",
+              "description": "Design and implement relational database schemas",
+              "time": "2:00 PM"
+            },
+            {
+              "date": "2025-02-10",
+              "type": "quiz",
+              "title": "Quiz 1: SQL and Queries",
+              "description": "Quiz on SQL syntax and query optimization",
+              "time": "11:00 AM"
+            },
+            {
+              "date": "2025-03-05",
+              "type": "assignment",
+              "title": "Assignment 2: Normalization",
+              "description": "Normalize complex relational database schemas",
+              "time": "9:00 AM"
+            },
+            {
+              "date": "2025-03-20",
+              "type": "exam",
+              "title": "Midterm Exam",
+              "description": "Covers relational database design and query writing",
+              "time": "3:00 PM"
+            },
+            {
+              "date": "2025-04-10",
+              "type": "project",
+              "title": "Final Project: Database Implementation",
+              "description": "Implement a fully functional database application",
+              "time": "1:00 PM"
+            },
+            {
+              "date": "2025-05-05",
+              "type": "exam",
+              "title": "Final Exam",
+              "description": "Comprehensive exam on database theory and SQL",
+              "time": "10:00 AM"
+            }
+          ]
         },
-        "schedule": [
-          {
-            "date": "2025-01-18",
-            "type": "assignment",
-            "title": "Assignment 1: Requirements Specification",
-            "description": "Create detailed requirements document for semester project"
+        {
+          "name": "Computer Networks",
+          "instructor_name": "Dr. John Smith",
+          "grade": "B",
+          "current_marks": {
+            "assignment": 20,
+            "quiz": 15,
+            "exam": 40,
+            "project": 25
           },
-          {
-            "date": "2025-02-05",
-            "type": "assignment",
-            "title": "Assignment 2: System Design",
-            "description": "Create UML diagrams and system architecture documents"
+          "marks_distribution": {
+            "assignment": 25,
+            "quiz": 15,
+            "exam": 35,
+            "project": 25
           },
-          {
-            "date": "2025-02-25",
-            "type": "quiz",
-            "title": "Quiz 1: Software Development Lifecycle",
-            "description": "Quiz on SDLC models and methodologies"
-          },
-          {
-            "date": "2025-03-10",
-            "type": "exam",
-            "title": "Midterm Exam",
-            "description": "Covers software development processes and design principles"
-          },
-          {
-            "date": "2025-04-01",
-            "type": "project",
-            "title": "Project Milestone 1",
-            "description": "First implementation milestone for semester project"
-          },
-          {
-            "date": "2025-05-01",
-            "type": "project",
-            "title": "Final Project Submission",
-            "description": "Complete working software with documentation"
-          },
-          {
-            "date": "2025-05-15",
-            "type": "exam",
-            "title": "Final Exam",
-            "description": "Comprehensive exam on all course topics"
-          }
-        ]
-      }
-    ]
+          "schedule": [
+            {
+              "date": "2025-01-25",
+              "type": "assignment",
+              "title": "Assignment 1: Network Topologies",
+              "description": "Analyze and design various network topologies",
+              "time": "12:00 PM"
+            },
+            {
+              "date": "2025-02-15",
+              "type": "quiz",
+              "title": "Quiz 1: OSI Model",
+              "description": "Quiz on OSI model layers and functions",
+              "time": "2:00 PM"
+            },
+            {
+              "date": "2025-03-05",
+              "type": "assignment",
+              "title": "Assignment 2: Routing Algorithms",
+              "description": "Implement and compare common routing algorithms",
+              "time": "10:00 AM"
+            },
+            {
+              "date": "2025-03-30",
+              "type": "exam",
+              "title": "Midterm Exam",
+              "description": "Covers network fundamentals and protocols",
+              "time": "1:00 PM"
+            },
+            {
+              "date": "2025-04-20",
+              "type": "project",
+              "title": "Final Project: Network Simulation",
+              "description": "Simulate network performance using real-world data",
+              "time": "11:00 AM"
+            },
+            {
+              "date": "2025-05-12",
+              "type": "exam",
+              "title": "Final Exam",
+              "description": "Comprehensive exam on networking concepts and protocols",
+              "time": "9:00 AM"
+            }
+          ]
+        }
+      ]
+    }
   }
-} 
+  

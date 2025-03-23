@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, Response, stream_with_context
+from flask import Flask, request, jsonify, Response, stream_with_context, send_file
 from flask_cors import CORS
 import os
 import json
@@ -75,6 +75,37 @@ class FirebaseClient:
                 json.dump(data, f, indent=2)
             return {"success": True, "message": "Data saved to student_data.json"}
         return {"success": False, "message": f"No data found for {email}"}
+
+class StudentDataManager:
+    def __init__(self):
+        self.firebase_client = FirebaseClient()
+    
+    def create_user(self, email, name):
+        return self.firebase_client.save_user(email, name)
+    
+    def create_semester(self, email, semester_num, term_name):
+        return self.firebase_client.add_semester(email, semester_num, term_name)
+    
+    def add_courses_to_semester(self, email, semester_num, courses):
+        return self.firebase_client.add_courses(email, semester_num, courses)
+    
+    def get_user_data(self, email):
+        return self.firebase_client.fetch_data(email)
+    
+    def sync_data_to_file(self, email):
+        return self.firebase_client.save_data_to_file(email)
+    
+    def get_student_data_from_file(self):
+        try:
+            with open('student_data.json', 'r') as file:
+                data = json.load(file)
+            return data
+        except FileNotFoundError:
+            return {"error": "Student data file not found"}
+        except json.JSONDecodeError:
+            return {"error": "Invalid JSON in student data file"}
+        except Exception as e:
+            return {"error": f"Error reading student data: {str(e)}"}
 
 class GeminiClient:
     def __init__(self):
@@ -157,7 +188,7 @@ class StudentAssistantAPI:
         self.app = Flask(__name__)
         CORS(self.app)
         self.gemini_client = GeminiClient()
-        self.firebase_client = FirebaseClient()
+        self.student_data_manager = StudentDataManager()
         self.setup_routes()
     
     def setup_routes(self):
@@ -165,6 +196,7 @@ class StudentAssistantAPI:
         self.app.route('/api/tasks', methods=['GET'])(self.get_tasks)
         self.app.route('/api/health', methods=['GET'])(self.health_check)
         self.app.route('/api/fetch_data', methods=['GET'])(self.fetch_data)
+        self.app.route('/api/get_student_data', methods=['GET'])(self.get_student_data)
         self.app.route('/api/save_user', methods=['POST'])(self.save_user)
         self.app.route('/api/add_semester', methods=['POST'])(self.add_semester)
         self.app.route('/api/add_courses', methods=['POST'])(self.add_courses)
@@ -228,17 +260,26 @@ class StudentAssistantAPI:
         try:
             email = request.args.get('email')
             if email:
-                data = self.firebase_client.fetch_data(email)
+                data = self.student_data_manager.get_user_data(email)
                 if data:
                     return jsonify(data)
                 return jsonify({"error": f"No data found for {email}"}), 404
             
-            with open('student_data.json', 'r') as file:
-                data = json.load(file)
-            return jsonify(data)
+            # If no email provided, return data from the JSON file
+            return jsonify(self.student_data_manager.get_student_data_from_file())
         except Exception as e:
             import traceback
             print(f"Error fetching data: {str(e)}")
+            print(traceback.format_exc())
+            return jsonify({"error": str(e)}), 500
+    
+    def get_student_data(self):
+        try:
+            data = self.student_data_manager.get_student_data_from_file()
+            return jsonify(data)
+        except Exception as e:
+            import traceback
+            print(f"Error getting student data: {str(e)}")
             print(traceback.format_exc())
             return jsonify({"error": str(e)}), 500
     
@@ -251,7 +292,7 @@ class StudentAssistantAPI:
             if not email or not name:
                 return jsonify({"error": "Email and name are required"}), 400
             
-            result = self.firebase_client.save_user(email, name)
+            result = self.student_data_manager.create_user(email, name)
             return jsonify(result)
         except Exception as e:
             import traceback
@@ -269,7 +310,7 @@ class StudentAssistantAPI:
             if not email or not semester_num or not term_name:
                 return jsonify({"error": "Email, semester_num, and term_name are required"}), 400
             
-            result = self.firebase_client.add_semester(email, semester_num, term_name)
+            result = self.student_data_manager.create_semester(email, semester_num, term_name)
             return jsonify(result)
         except Exception as e:
             import traceback
@@ -287,7 +328,7 @@ class StudentAssistantAPI:
             if not email or not semester_num or not courses:
                 return jsonify({"error": "Email, semester_num, and courses are required"}), 400
             
-            result = self.firebase_client.add_courses(email, semester_num, courses)
+            result = self.student_data_manager.add_courses_to_semester(email, semester_num, courses)
             return jsonify(result)
         except Exception as e:
             import traceback
@@ -303,7 +344,7 @@ class StudentAssistantAPI:
             if not email:
                 return jsonify({"error": "Email is required"}), 400
             
-            result = self.firebase_client.save_data_to_file(email)
+            result = self.student_data_manager.sync_data_to_file(email)
             return jsonify(result)
         except Exception as e:
             import traceback

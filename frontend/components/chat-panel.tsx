@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useEffect } from "react"
+import { useRef, useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ChevronLeft, ChevronRight, Send } from "lucide-react"
@@ -14,11 +14,25 @@ interface ChatPanelProps {
 export default function ChatPanel({ isOpen, onToggle }: ChatPanelProps) {
   const { messages, input, handleInputChange, handleSubmit } = useChat()
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const [mounted, setMounted] = useState(false)
 
-  // Scroll to bottom when messages change
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])
+
+  if (!mounted) {
+    return (
+      <div
+        className={`fixed top-0 right-0 h-full bg-gray-100 dark:bg-gray-900 border-l border-gray-200 dark:border-gray-800 transition-all duration-300 z-10 ${
+          isOpen ? "w-80" : "w-16"
+        }`}
+      />
+    )
+  }
 
   return (
     <div
