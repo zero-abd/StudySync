@@ -241,6 +241,40 @@
             "type": "other"
           }
         ]
+      },
+      {
+        "course_name": "Data Structures",
+        "instructor_name": "Ying Liu",
+        "start_time": "11:00 AM",
+        "end_time": "11:50 AM",
+        "grade": "",
+        "current_marks": {},
+        "marks_distribution": {
+          "assignment": 40,
+          "exam": 30,
+          "project": 0,
+          "quiz": 15
+        },
+        "schedule": [
+          {
+            "date": "2025-02-28",
+            "description": "Tentatively on Feb 28th (Friday) in class",
+            "title": "Midterm exam I",
+            "type": "exam"
+          },
+          {
+            "date": "2025-03-28",
+            "description": "Tentatively on March 28th (Friday) in class",
+            "title": "Midterm exam II",
+            "type": "exam"
+          },
+          {
+            "date": "2025-05-08",
+            "description": "May 8 (Thursday) 1:30p.m. to 4:00 p.m. in classroom, no make-up exam",
+            "title": "Final exam",
+            "type": "exam"
+          }
+        ]
       }
     ]
   }
