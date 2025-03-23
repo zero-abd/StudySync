@@ -8,6 +8,7 @@ from vertexai.generative_models import GenerativeModel, Part
 import vertexai
 import firebase_admin
 from firebase_admin import credentials, firestore
+import tempfile
 
 load_dotenv()
 
@@ -106,6 +107,51 @@ class StudentDataManager:
             return {"error": "Invalid JSON in student data file"}
         except Exception as e:
             return {"error": f"Error reading student data: {str(e)}"}
+    
+    def save_syllabus_data(self, syllabus_data):
+        try:
+            try:
+                with open('student_data.json', 'r') as file:
+                    student_data = json.load(file)
+            except (FileNotFoundError, json.JSONDecodeError):
+                return {"error": "Could not read student data file"}
+            
+            semesters = [k for k in student_data.keys() if k.startswith('semester_')]
+            if not semesters:
+                return {"error": "No semesters found in student data"}
+            
+            semester_key = semesters[0]
+            
+            course_info = {
+                "course_name": syllabus_data.get('course_name', 'Unknown Course'),
+                "instructor_name": syllabus_data.get('instructor_name', 'Unknown Instructor'),
+                "start_time": syllabus_data.get('start_time', ''),
+                "end_time": syllabus_data.get('end_time', ''),
+                "grade": "",
+                "current_marks": {},
+                "marks_distribution": syllabus_data.get('marks_distribution', {}),
+                "schedule": syllabus_data.get('schedule', [])
+            }
+            
+            course_exists = False
+            for i, course in enumerate(student_data[semester_key]['courses']):
+                if course['course_name'] == course_info['course_name']:
+                    student_data[semester_key]['courses'][i] = course_info
+                    course_exists = True
+                    break
+            
+            if not course_exists:
+                student_data[semester_key]['courses'].append(course_info)
+            
+            with open('student_data.json', 'w') as file:
+                json.dump(student_data, file, indent=2)
+            
+            return {"success": True, "message": "Course information saved successfully"}
+        except Exception as e:
+            import traceback
+            print(f"Error saving syllabus data: {str(e)}")
+            print(traceback.format_exc())
+            return {"error": str(e)}
 
 class GeminiClient:
     def __init__(self):
@@ -146,13 +192,15 @@ class GeminiClient:
         return self.model.generate_content(contents, stream=True)
     
     def generate_syllabus_analysis(self, pdf_uri):
-        prompt = """Analyze the syllabus PDF and return structured data in this exact JSON format:
+        prompt = """For context: Class hours is the start_time and end_time of classes. Analyze the syllabus PDF and return structured data in this exact JSON format:
                 {
                   "course_name": string,
                   "instructor_name": string,
+                  "start_time": "HH:MM XM",
+                  "end_time": "HH:MM XM",
                   "schedule": [{
                     "date": "YYYY-MM-DD",
-                    "type": "assignment|quiz|exam|project|other",
+                    "type": "class|assignment|quiz|exam|project|other",
                     "title": string,
                     "description": string
                   }],
@@ -168,10 +216,8 @@ class GeminiClient:
         contents = self.prepare_contents(prompt, file_uri=pdf_uri)
         response = self.model.generate_content(contents)
         
-        # Clean up the response to ensure valid JSON
         response_text = response.text.strip()
         
-        # Remove markdown code block formatting if present
         if response_text.startswith("```json"):
             response_text = response_text[7:]
         if response_text.startswith("```"):
@@ -201,14 +247,19 @@ class StudentAssistantAPI:
         self.app.route('/api/add_semester', methods=['POST'])(self.add_semester)
         self.app.route('/api/add_courses', methods=['POST'])(self.add_courses)
         self.app.route('/api/sync_data', methods=['POST'])(self.sync_data)
+        self.app.route('/api/save_syllabus_data', methods=['POST'])(self.save_syllabus_data)
     
     def chat(self):
         try:
-            data = request.json
+            data = request.form.to_dict() if request.files else request.json
             user_prompt = data.get('prompt', '')
             task_type = data.get('task_type', 'general')
             image_url = data.get('image_url', None)
             no_stream = data.get('no_stream', False)
+            action = data.get('action', 'chat')
+            
+            if action == 'analyze_syllabus' and request.files and 'file' in request.files:
+                return self.handle_syllabus_analysis(request.files['file'])
             
             if not user_prompt:
                 return jsonify({"error": "No prompt provided"}), 400
@@ -223,6 +274,25 @@ class StudentAssistantAPI:
             print(f"Error in chat endpoint: {str(e)}")
             print(traceback.format_exc())
             return jsonify({"error": str(e)}), 500
+    
+    def handle_syllabus_analysis(self, file):
+        if file.filename == '':
+            return jsonify({"error": "No file selected"}), 400
+            
+        if not file.filename.lower().endswith('.pdf'):
+            return jsonify({"error": "File must be a PDF"}), 400
+        
+        with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as temp:
+            file.save(temp.name)
+            temp_path = temp.name
+        
+        try:
+            analysis = self.gemini_client.generate_syllabus_analysis(temp_path)
+            os.unlink(temp_path)
+            return jsonify(analysis)
+        except Exception as e:
+            os.unlink(temp_path)
+            raise e
     
     def handle_non_streaming_response(self, prompt, image_url):
         response_text = self.gemini_client.generate_content(prompt, file_uri=image_url)
@@ -265,7 +335,6 @@ class StudentAssistantAPI:
                     return jsonify(data)
                 return jsonify({"error": f"No data found for {email}"}), 404
             
-            # If no email provided, return data from the JSON file
             return jsonify(self.student_data_manager.get_student_data_from_file())
         except Exception as e:
             import traceback
@@ -352,6 +421,23 @@ class StudentAssistantAPI:
             print(traceback.format_exc())
             return jsonify({"error": str(e)}), 500
     
+    def save_syllabus_data(self):
+        try:
+            data = request.json
+            syllabus_data = data.get('data')
+            
+            if not syllabus_data:
+                return jsonify({"error": "No data provided"}), 400
+            
+            result = self.student_data_manager.save_syllabus_data(syllabus_data)
+            return jsonify(result)
+            
+        except Exception as e:
+            import traceback
+            print(f"Error saving syllabus data: {str(e)}")
+            print(traceback.format_exc())
+            return jsonify({"error": str(e)}), 500
+    
     def run(self, debug=True, host="0.0.0.0", port=None):
         if port is None:
             port = int(os.environ.get("PORT", 5000))
@@ -359,7 +445,7 @@ class StudentAssistantAPI:
 
 def run_examples():
     gemini_client = GeminiClient()
-    
+
     # prompt = "What are three effective study techniques for college students?"
     # print(f"Example 1: Text prompt - '{prompt}'")
     # print("Response (streaming):")
@@ -387,7 +473,7 @@ def run_examples():
     
     # response_text = gemini_client.generate_content(prompt)
     # print(f"Response:\n{response_text}")
-
+    
     # syllabus_files = [
     #     "pdfs/data structure syllabus_Spring 2025_blackboard.pdf",
     #     "pdfs/3350 Spring 25 Syllabus(1).pdf"

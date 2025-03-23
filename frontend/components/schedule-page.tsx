@@ -3,13 +3,47 @@
 import { useState } from "react"
 import { useStudentData } from "@/hooks/use-student-data"
 import { Button } from "@/components/ui/button"
-import { Calendar, Grid3X3, ListFilter } from "lucide-react"
+import { Calendar, Grid3X3, ListFilter, ChevronLeft, ChevronRight } from "lucide-react"
 
 type ViewType = 'detailed' | 'week' | 'month'
 
 export default function SchedulePage() {
   const [viewType, setViewType] = useState<ViewType>('detailed')
   const { studentData, loading, error } = useStudentData()
+  const [currentDateOffset, setCurrentDateOffset] = useState(0)
+
+  // Navigation functions
+  const goToPrevious = () => {
+    setCurrentDateOffset(prev => prev - 1)
+  }
+
+  const goToNext = () => {
+    setCurrentDateOffset(prev => prev + 1)
+  }
+
+  const resetDateOffset = () => {
+    setCurrentDateOffset(0)
+  }
+
+  // Get next working day (skip weekend)
+  const getNextWorkingDay = (offset = 0) => {
+    const today = new Date()
+    let daysToAdd = 1 + offset // Start with tomorrow + any offset
+    
+    // Clone the date object to avoid modifying the original
+    const nextDay = new Date(today)
+    nextDay.setDate(today.getDate() + daysToAdd)
+    
+    // If it's a weekend, move to Monday
+    const dayOfWeek = nextDay.getDay()
+    if (dayOfWeek === 0) { // Sunday
+      nextDay.setDate(nextDay.getDate() + 1)
+    } else if (dayOfWeek === 6) { // Saturday
+      nextDay.setDate(nextDay.getDate() + 2)
+    }
+    
+    return nextDay
+  }
 
   if (loading) {
     return (
@@ -49,7 +83,9 @@ export default function SchedulePage() {
         course.schedule.forEach((item: any) => {
           scheduleItems.push({
             ...item,
-            courseName: course.name,
+            courseName: course.course_name,
+            startTime: course.start_time,
+            endTime: course.end_time
           })
         })
       }
@@ -60,9 +96,10 @@ export default function SchedulePage() {
 
   const scheduleItems = getAllScheduleItems()
 
+  // Format date without year
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
-    return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
+    return date.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
   }
   
   const getTypeColor = (type: string) => {
@@ -74,6 +111,10 @@ export default function SchedulePage() {
       default: return 'bg-gray-100 dark:bg-gray-900/20 text-gray-600 dark:text-gray-400'
     }
   }
+
+  // Get next working day with offset
+  const scheduleDate = getNextWorkingDay(currentDateOffset)
+  const formattedScheduleDate = formatDate(scheduleDate)
   
   // Group schedule items by month
   const groupByMonth = () => {
@@ -120,7 +161,7 @@ export default function SchedulePage() {
       const weekEnd = new Date(currentDate)
       weekEnd.setDate(weekEnd.getDate() + 6)
       
-      const weekLabel = `${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
+      const weekLabel = `${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
       grouped[weekLabel] = []
       
       // Add items for this week
@@ -168,7 +209,35 @@ export default function SchedulePage() {
   return (
     <div className="rounded-lg border border-gray-200 dark:border-gray-800 h-full p-6 overflow-auto">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Class Schedule</h1>
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="outline" 
+            size="icon" 
+            onClick={goToPrevious} 
+            className="h-8 w-8 rounded-full"
+          >
+            <ChevronLeft size={18} />
+          </Button>
+          <h1 className="text-2xl font-bold">Schedule - {formattedScheduleDate}</h1>
+          <Button 
+            variant="outline" 
+            size="icon" 
+            onClick={goToNext} 
+            className="h-8 w-8 rounded-full"
+          >
+            <ChevronRight size={18} />
+          </Button>
+          {currentDateOffset !== 0 && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={resetDateOffset} 
+              className="text-sm"
+            >
+              Today
+            </Button>
+          )}
+        </div>
         
         <div className="flex bg-gray-100 dark:bg-gray-900 rounded-lg p-1">
           <Button 
@@ -208,7 +277,7 @@ export default function SchedulePage() {
             {Object.entries(groupedDetailedSchedule).map(([monthYear, items]) => (
               <div key={monthYear}>
                 <h2 className="text-xl font-semibold mb-4 pb-2 border-b border-gray-200 dark:border-gray-800">
-                  {monthYear}
+                  {monthYear.split(" ")[0]} {/* Only show month name, not year */}
                 </h2>
                 <div className="space-y-4">
                   {items.map((item, index) => (
@@ -226,7 +295,10 @@ export default function SchedulePage() {
                         <p className="text-sm">{item.description}</p>
                         <div className="flex items-center justify-between mt-2">
                           <p className="text-sm text-gray-500 dark:text-gray-400">{formatDate(item.date)}</p>
-                          {item.time && <p className="text-sm font-medium">{item.time}</p>}
+                          {/* Display course start and end time */}
+                          {item.startTime && item.endTime && (
+                            <p className="text-sm font-medium">{item.startTime} - {item.endTime}</p>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -249,41 +321,31 @@ export default function SchedulePage() {
                 <h2 className="text-xl font-semibold mb-4 pb-2 border-b border-gray-200 dark:border-gray-800">
                   {weekRange}
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-7 gap-2">
-                  {Array.from({length: 7}, (_, i) => {
-                    const dayItems = items.filter(item => {
-                      const date = new Date(item.date)
-                      return date.getDay() === i
-                    })
-                    
-                    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-                    
-                    return (
-                      <div key={i} className="border border-gray-200 dark:border-gray-800 rounded-lg p-2 h-full">
-                        <h3 className="text-sm font-medium mb-2 pb-1 border-b border-gray-200 dark:border-gray-800">
-                          {dayNames[i]}
-                        </h3>
-                        {dayItems.length > 0 ? (
-                          <div className="space-y-2">
-                            {dayItems.map((item, index) => (
-                              <div key={index} className="p-2 rounded-lg bg-gray-100 dark:bg-gray-900 text-sm">
-                                <div className="flex justify-between">
-                                  <span className="font-medium truncate">{item.title}</span>
-                                  <span className={`text-xs px-1 py-0.5 rounded capitalize ${getTypeColor(item.type)}`}>
-                                    {item.type}
-                                  </span>
-                                </div>
-                                <p className="text-xs text-gray-600 dark:text-gray-400 truncate">{item.courseName}</p>
-                                {item.time && <p className="text-xs font-medium mt-1">{item.time}</p>}
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <p className="text-xs text-gray-400">No events</p>
-                        )}
+                
+                <div className="space-y-4">
+                  {items.map((item, index) => (
+                    <div key={index} className="p-4 rounded-lg border border-gray-200 dark:border-gray-800">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="text-lg font-medium">{item.title}</h3>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">{item.courseName}</p>
+                        </div>
+                        <span className={`px-2 py-1 rounded text-sm font-medium capitalize ${getTypeColor(item.type)}`}>
+                          {item.type}
+                        </span>
                       </div>
-                    )
-                  })}
+                      <div className="mt-3">
+                        <p className="text-sm">{item.description}</p>
+                        <div className="flex items-center justify-between mt-2">
+                          <p className="text-sm text-gray-500 dark:text-gray-400">{formatDate(item.date)}</p>
+                          {/* Display course start and end time */}
+                          {item.startTime && item.endTime && (
+                            <p className="text-sm font-medium">{item.startTime} - {item.endTime}</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             ))}

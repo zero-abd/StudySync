@@ -1,261 +1,247 @@
 {
-    "email": "student@university.edu",
-    "name": "Alex Johnson",
-    "semester_1": {
-      "term": "Spring 2025",
-      "courses": [
-        {
-          "name": "Data Structures and Algorithms",
-          "instructor_name": "Dr. Sarah Chen",
-          "grade": "A-",
-          "current_marks": {
-            "assignment": 25,
-            "quiz": 10,
-            "exam": 30,
-            "project": 15
-          },
-          "marks_distribution": {
-            "assignment": 30,
-            "quiz": 15,
-            "exam": 40,
-            "project": 15
-          },
-          "schedule": [
-            {
-              "date": "2025-01-15",
-              "type": "assignment",
-              "title": "Assignment 1: Array Implementation",
-              "description": "Implement basic array operations and analyze time complexity",
-              "time": "10:00 AM"
-            },
-            {
-              "date": "2025-01-29",
-              "type": "quiz",
-              "title": "Quiz 1: Time Complexity",
-              "description": "Basic quiz on algorithm analysis and time complexity notation",
-              "time": "2:00 PM"
-            },
-            {
-              "date": "2025-02-12",
-              "type": "assignment",
-              "title": "Assignment 2: Linked Lists",
-              "description": "Implement and optimize singly and doubly linked list operations",
-              "time": "10:00 AM"
-            },
-            {
-              "date": "2025-03-01",
-              "type": "exam",
-              "title": "Midterm Exam",
-              "description": "Covers all material from weeks 1-6",
-              "time": "9:00 AM"
-            },
-            {
-              "date": "2025-04-15",
-              "type": "project",
-              "title": "Final Project: Advanced Data Structures",
-              "description": "Implement and benchmark performance of multiple data structures",
-              "time": "1:00 PM"
-            },
-            {
-              "date": "2025-05-10",
-              "type": "exam",
-              "title": "Final Exam",
-              "description": "Comprehensive exam covering all course material",
-              "time": "10:00 AM"
-            }
-          ]
+  "email": "student@university.edu",
+  "name": "Alex Johnson",
+  "semester_1": {
+    "term": "Spring 2025",
+    "courses": [
+      {
+        "course_name": "MATH 3350 Higher Mathematics for Engineers & Scientists",
+        "instructor_name": "Amanda N. Laubmeier",
+        "start_time": "02:00 PM",
+        "end_time": "03:20 PM",
+        "grade": "",
+        "current_marks": {},
+        "marks_distribution": {
+          "assignment": 15,
+          "exam": 60,
+          "project": 10,
+          "quiz": 0
         },
-        {
-          "name": "Software Engineering",
-          "instructor_name": "Prof. Michael Rodriguez",
-          "grade": "B+",
-          "current_marks": {
-            "assignment": 20,
-            "quiz": 10,
-            "exam": 25,
-            "project": 35
+        "schedule": [
+          {
+            "date": "2025-01-16",
+            "description": "ODE basics (1.3, 2.8)",
+            "title": "worksheet",
+            "type": "assignment"
           },
-          "marks_distribution": {
-            "assignment": 20,
-            "quiz": 10,
-            "exam": 30,
-            "project": 40
+          {
+            "date": "2025-01-21",
+            "description": "ODE Behavior",
+            "title": "Video Due 1",
+            "type": "class"
           },
-          "schedule": [
-            {
-              "date": "2025-01-18",
-              "type": "assignment",
-              "title": "Assignment 1: Requirements Specification",
-              "description": "Create detailed requirements document for semester project",
-              "time": "11:00 AM"
-            },
-            {
-              "date": "2025-02-05",
-              "type": "assignment",
-              "title": "Assignment 2: System Design",
-              "description": "Create UML diagrams and system architecture documents",
-              "time": "9:00 AM"
-            },
-            {
-              "date": "2025-02-25",
-              "type": "quiz",
-              "title": "Quiz 1: Software Development Lifecycle",
-              "description": "Quiz on SDLC models and methodologies",
-              "time": "1:00 PM"
-            },
-            {
-              "date": "2025-03-10",
-              "type": "exam",
-              "title": "Midterm Exam",
-              "description": "Covers software development processes and design principles",
-              "time": "10:00 AM"
-            },
-            {
-              "date": "2025-04-01",
-              "type": "project",
-              "title": "Project Milestone 1",
-              "description": "First implementation milestone for semester project",
-              "time": "2:00 PM"
-            },
-            {
-              "date": "2025-05-01",
-              "type": "project",
-              "title": "Final Project Submission",
-              "description": "Complete working software with documentation",
-              "time": "12:00 PM"
-            },
-            {
-              "date": "2025-05-15",
-              "type": "exam",
-              "title": "Final Exam",
-              "description": "Comprehensive exam on all course topics",
-              "time": "3:00 PM"
-            }
-          ]
-        },
-        {
-          "name": "Database Management Systems",
-          "instructor_name": "Dr. Emily Wong",
-          "grade": "A",
-          "current_marks": {
-            "assignment": 30,
-            "quiz": 15,
-            "exam": 40,
-            "project": 15
+          {
+            "date": "2025-01-23",
+            "description": "Numerical Approximations",
+            "title": "Video Due 2",
+            "type": "class"
           },
-          "marks_distribution": {
-            "assignment": 25,
-            "quiz": 20,
-            "exam": 35,
-            "project": 20
+          {
+            "date": "2025-01-28",
+            "description": "Separable ODEs",
+            "title": "Video Due 3",
+            "type": "class"
           },
-          "schedule": [
-            {
-              "date": "2025-01-22",
-              "type": "assignment",
-              "title": "Assignment 1: Database Design",
-              "description": "Design and implement relational database schemas",
-              "time": "2:00 PM"
-            },
-            {
-              "date": "2025-02-10",
-              "type": "quiz",
-              "title": "Quiz 1: SQL and Queries",
-              "description": "Quiz on SQL syntax and query optimization",
-              "time": "11:00 AM"
-            },
-            {
-              "date": "2025-03-05",
-              "type": "assignment",
-              "title": "Assignment 2: Normalization",
-              "description": "Normalize complex relational database schemas",
-              "time": "9:00 AM"
-            },
-            {
-              "date": "2025-03-20",
-              "type": "exam",
-              "title": "Midterm Exam",
-              "description": "Covers relational database design and query writing",
-              "time": "3:00 PM"
-            },
-            {
-              "date": "2025-04-10",
-              "type": "project",
-              "title": "Final Project: Database Implementation",
-              "description": "Implement a fully functional database application",
-              "time": "1:00 PM"
-            },
-            {
-              "date": "2025-05-05",
-              "type": "exam",
-              "title": "Final Exam",
-              "description": "Comprehensive exam on database theory and SQL",
-              "time": "10:00 AM"
-            }
-          ]
-        },
-        {
-          "name": "Computer Networks",
-          "instructor_name": "Dr. John Smith",
-          "grade": "B",
-          "current_marks": {
-            "assignment": 20,
-            "quiz": 15,
-            "exam": 40,
-            "project": 25
+          {
+            "date": "2025-01-30",
+            "description": "Linear ODEs",
+            "title": "Video Due 4",
+            "type": "class"
           },
-          "marks_distribution": {
-            "assignment": 25,
-            "quiz": 15,
-            "exam": 35,
-            "project": 25
+          {
+            "date": "2025-01-31",
+            "description": "Drop deadline Jan. 31",
+            "title": "Drop deadline",
+            "type": "other"
           },
-          "schedule": [
-            {
-              "date": "2025-01-25",
-              "type": "assignment",
-              "title": "Assignment 1: Network Topologies",
-              "description": "Analyze and design various network topologies",
-              "time": "12:00 PM"
-            },
-            {
-              "date": "2025-02-15",
-              "type": "quiz",
-              "title": "Quiz 1: OSI Model",
-              "description": "Quiz on OSI model layers and functions",
-              "time": "2:00 PM"
-            },
-            {
-              "date": "2025-03-05",
-              "type": "assignment",
-              "title": "Assignment 2: Routing Algorithms",
-              "description": "Implement and compare common routing algorithms",
-              "time": "10:00 AM"
-            },
-            {
-              "date": "2025-03-30",
-              "type": "exam",
-              "title": "Midterm Exam",
-              "description": "Covers network fundamentals and protocols",
-              "time": "1:00 PM"
-            },
-            {
-              "date": "2025-04-20",
-              "type": "project",
-              "title": "Final Project: Network Simulation",
-              "description": "Simulate network performance using real-world data",
-              "time": "11:00 AM"
-            },
-            {
-              "date": "2025-05-12",
-              "type": "exam",
-              "title": "Final Exam",
-              "description": "Comprehensive exam on networking concepts and protocols",
-              "time": "9:00 AM"
-            }
-          ]
-        }
-      ]
-    }
+          {
+            "date": "2025-02-04",
+            "description": "Exact Equations",
+            "title": "Video Due 5",
+            "type": "class"
+          },
+          {
+            "date": "2025-02-06",
+            "description": "Extra review day",
+            "title": "Extra review day",
+            "type": "class"
+          },
+          {
+            "date": "2025-02-07",
+            "description": "Project 1 due Feb. 7",
+            "title": "Project 1",
+            "type": "project"
+          },
+          {
+            "date": "2025-02-11",
+            "description": "Spring/Mass systems",
+            "title": "Exam 1",
+            "type": "exam"
+          },
+          {
+            "date": "2025-02-13",
+            "description": "Project 2 assigned",
+            "title": "worksheet",
+            "type": "assignment"
+          },
+          {
+            "date": "2025-02-18",
+            "description": "Linear Equations",
+            "title": "Video Due 6",
+            "type": "class"
+          },
+          {
+            "date": "2025-02-20",
+            "description": "Homog. Const. Coeff.",
+            "title": "Video Due 7",
+            "type": "class"
+          },
+          {
+            "date": "2025-02-25",
+            "description": "Reduction of Order",
+            "title": "Video Due 8",
+            "type": "class"
+          },
+          {
+            "date": "2025-02-27",
+            "description": "Undetermined Coeff.",
+            "title": "Video Due 9",
+            "type": "class"
+          },
+          {
+            "date": "2025-03-04",
+            "description": "Variation of Parameters",
+            "title": "Video Due 10",
+            "type": "class"
+          },
+          {
+            "date": "2025-03-06",
+            "description": "Extra review day",
+            "title": "Extra review day",
+            "type": "class"
+          },
+          {
+            "date": "2025-03-07",
+            "description": "Project 2 due Mar. 7",
+            "title": "Project 2",
+            "type": "project"
+          },
+          {
+            "date": "2025-03-11",
+            "description": "Exam 2",
+            "title": "Exam 2",
+            "type": "exam"
+          },
+          {
+            "date": "2025-03-13",
+            "description": "Optional: Exam Makeup Day",
+            "title": "Optional: Exam Makeup Day",
+            "type": "other"
+          },
+          {
+            "date": "2025-03-25",
+            "description": "Intro to Project 3",
+            "title": "slides",
+            "type": "assignment"
+          },
+          {
+            "date": "2025-03-27",
+            "description": "Laplace Transform (6.1-6.2)",
+            "title": "worksheet",
+            "type": "assignment"
+          },
+          {
+            "date": "2025-04-01",
+            "description": "Inverse Laplace (6.1-6.2)",
+            "title": "Video Due 12",
+            "type": "class"
+          },
+          {
+            "date": "2025-04-03",
+            "description": "Translation (6.3-6.4)",
+            "title": "Video Due 13",
+            "type": "class"
+          },
+          {
+            "date": "2025-04-08",
+            "description": "Operations (6.6)",
+            "title": "Video Due 14",
+            "type": "class"
+          },
+          {
+            "date": "2025-04-10",
+            "description": "Dirac Delta (6.5)",
+            "title": "Video Due 15",
+            "type": "class"
+          },
+          {
+            "date": "2025-04-15",
+            "description": "Extra review day",
+            "title": "Extra review day",
+            "type": "class"
+          },
+          {
+            "date": "2025-04-17",
+            "description": "Series Basics",
+            "title": "Video Due 16",
+            "type": "class"
+          },
+          {
+            "date": "2025-04-18",
+            "description": "Project 3 due Apr. 18",
+            "title": "Project 3",
+            "type": "project"
+          },
+          {
+            "date": "2025-04-22",
+            "description": "Series Solutions (5.2-5.3)",
+            "title": "Video Due 17",
+            "type": "class"
+          },
+          {
+            "date": "2025-04-24",
+            "description": "Extra review day",
+            "title": "Extra review day",
+            "type": "class"
+          },
+          {
+            "date": "2025-04-22",
+            "description": "Apr. 21 holiday - HW due Apr. 22",
+            "title": "HW due Apr. 22",
+            "type": "other"
+          },
+          {
+            "date": "2025-04-22",
+            "description": "Final drop date Apr. 22",
+            "title": "Final drop date",
+            "type": "other"
+          },
+          {
+            "date": "2025-04-29",
+            "description": "Exam 3",
+            "title": "Exam 3",
+            "type": "exam"
+          },
+          {
+            "date": "2025-05-01",
+            "description": "Final Presentations",
+            "title": "Final Presentations",
+            "type": "other"
+          },
+          {
+            "date": "2025-05-06",
+            "description": "Final Presentations",
+            "title": "Final Presentations",
+            "type": "other"
+          },
+          {
+            "date": "2025-05-10",
+            "description": "Optional: Exam Makeup Day Saturday 1:30PM-4:00PM",
+            "title": "Optional: Exam Makeup Day",
+            "type": "other"
+          }
+        ]
+      }
+    ]
   }
-  
+}
