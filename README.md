@@ -2,6 +2,8 @@
 
 **StudySync** is a comprehensive student dashboard application that makes it super easy to sync different courses, assignments, and exams into a single unified portal by simply uploading PDF syllabi. Unlike traditional LMS platforms like Canvas and Blackboard that often fail to provide centralized course management (because professors don't maintain them properly), StudySync automatically extracts and organizes all your academic information from syllabus PDFs using AI.
 
+<img width="1603" height="997" alt="image" src="https://github.com/user-attachments/assets/45c48b9e-06a6-4729-853f-64a0b5ad70dd" />
+
 ## ✨ Features
 
 - **🤖 AI-Powered PDF Analysis**: Upload syllabus PDFs and automatically extract course information, schedules, assignments, and grade distributions
