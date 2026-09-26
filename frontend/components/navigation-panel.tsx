@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
   ChevronLeft,
   ChevronRight,
@@ -11,8 +11,6 @@ import {
   BookOpen,
   CheckSquare,
   BarChart,
-  Settings,
-  LogOut,
 } from "lucide-react"
 import Link from "next/link"
 import { useStudentData } from "@/hooks/use-student-data"
@@ -37,7 +35,6 @@ export default function NavigationPanel({ isOpen, onToggle, currentPath = "/" }:
     { id: "courses", label: "Courses", icon: <BookOpen size={20} />, path: "/dashboard/courses" },
     { id: "tasks", label: "Tasks", icon: <CheckSquare size={20} />, path: "/dashboard/tasks" },
     { id: "progress", label: "Progress", icon: <BarChart size={20} />, path: "/dashboard/progress" },
-    { id: "settings", label: "Settings", icon: <Settings size={20} />, path: "/dashboard/settings" },
   ]
 
   // Determine active item based on current path
@@ -91,7 +88,6 @@ export default function NavigationPanel({ isOpen, onToggle, currentPath = "/" }:
           className={`p-4 flex ${isOpen ? "flex-row" : "flex-col"} items-center gap-3 border-b border-gray-200 dark:border-gray-800`}
         >
           <Avatar className="h-10 w-10">
-            <AvatarImage src="/placeholder.svg" alt="Profile" />
             <AvatarFallback>{getUserInitials()}</AvatarFallback>
           </Avatar>
           {isOpen && (
@@ -125,16 +121,6 @@ export default function NavigationPanel({ isOpen, onToggle, currentPath = "/" }:
           </ul>
         </nav>
 
-        {/* Sign Out */}
-        <div className="p-4 border-t border-gray-200 dark:border-gray-800">
-          <Button
-            variant="ghost"
-            className={`w-full justify-${isOpen ? "start" : "center"} rounded-lg text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20`}
-          >
-            <LogOut size={20} />
-            {isOpen && <span className="ml-3">Sign Out</span>}
-          </Button>
-        </div>
       </div>
     </div>
   )

@@ -8,7 +8,9 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Spinner } from "@/components/ui/spinner"
-import { useStudentData } from "@/hooks/use-student-data"
+import { resetToSample, saveCourse } from "@/hooks/use-student-data"
+import { getGeminiKey } from "@/hooks/use-gemini-key"
+import ApiKeyPanel from "@/components/api-key-panel"
 
 interface ChatPanelProps {
   isOpen: boolean
@@ -37,6 +39,20 @@ interface ScheduleItem {
   description: string | null
 }
 
+async function readError(response: Response, fallback: string): Promise<string> {
+  try {
+    const body = await response.json()
+    if (body?.error) return body.error
+  } catch {
+    // not JSON
+  }
+  return fallback
+}
+
+const SAMPLE_PDF = "/sample-syllabus.pdf"
+
+const NEED_KEY = "Add your Gemini API key in the panel below first. It is free from Google AI Studio."
+
 export default function ChatPanel({ isOpen, onToggle }: ChatPanelProps) {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState("")
@@ -50,7 +66,6 @@ export default function ChatPanel({ isOpen, onToggle }: ChatPanelProps) {
   const [pdfDataUrl, setPdfDataUrl] = useState<string | null>(null)
   const [pdfError, setPdfError] = useState<string | null>(null)
   const [isPdfSidebarCollapsed, setIsPdfSidebarCollapsed] = useState(false)
-  const { refetch } = useStudentData()
 
   useEffect(() => {
     setMounted(true)
@@ -72,35 +87,46 @@ export default function ChatPanel({ isOpen, onToggle }: ChatPanelProps) {
 
     setMessages(prev => [...prev, userMessage])
     setInput("")
+
+    const apiKey = getGeminiKey()
+    if (!apiKey) {
+      setMessages(prev => [...prev, { id: `${Date.now()}-a`, role: 'assistant', content: NEED_KEY }])
+      return
+    }
+
     setIsLoading(true)
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/chat`, {
+      const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'x-gemini-key': apiKey,
         },
-        body: JSON.stringify({ prompt: input }),
+        body: JSON.stringify({ prompt: userMessage.content }),
       })
 
       if (!response.ok) {
-        throw new Error('Network response was not ok')
+        throw new Error(await readError(response, 'Sorry, there was an error processing your request.'))
       }
 
       const reader = response.body?.getReader()
       if (!reader) throw new Error('Reader not available')
 
-      const assistantMessageId = Date.now().toString()
+      const assistantMessageId = `${Date.now()}-a`
       setMessages(prev => [...prev, { id: assistantMessageId, role: 'assistant', content: '' }])
 
+      const decoder = new TextDecoder()
+      let buffer = ''
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
 
-        const text = new TextDecoder().decode(value)
-        const lines = text.split('\n').filter(line => line.trim())
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split('\n')
+        buffer = lines.pop() ?? ''
 
-        for (const line of lines) {
+        for (const line of lines.filter(l => l.trim())) {
           try {
             const data = JSON.parse(line)
             
@@ -120,9 +146,10 @@ export default function ChatPanel({ isOpen, onToggle }: ChatPanelProps) {
       }
     } catch (error) {
       console.error('Error sending message:', error)
+      const content = error instanceof Error && error.message ? error.message : 'Sorry, there was an error processing your request.'
       setMessages(prev => [
         ...prev, 
-        { id: Date.now().toString(), role: 'assistant', content: 'Sorry, there was an error processing your request.' }
+        { id: `${Date.now()}-e`, role: 'assistant', content }
       ])
     } finally {
       setIsLoading(false)
@@ -135,43 +162,54 @@ export default function ChatPanel({ isOpen, onToggle }: ChatPanelProps) {
       const file = e.target.files[0]
       setSelectedFile(file)
       
-      // Create a data URL for the PDF viewer
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        if (e.target?.result) {
-          setPdfDataUrl(e.target.result as string)
-        }
-      }
-      reader.onerror = () => {
-        setPdfError('Failed to read the file. Please try again.')
-      }
-      reader.readAsDataURL(file)
+      // Object URL for the PDF viewer in the review dialog
+      setPdfDataUrl(URL.createObjectURL(file))
+    }
+  }
+
+  const loadSampleSyllabus = async () => {
+    setPdfError(null)
+    try {
+      const res = await fetch(SAMPLE_PDF)
+      if (!res.ok) throw new Error('missing')
+      const blob = await res.blob()
+      const file = new File([blob], 'sample-syllabus.pdf', { type: 'application/pdf' })
+      setSelectedFile(file)
+      setPdfDataUrl(URL.createObjectURL(file))
+    } catch {
+      setPdfError('Could not load the sample syllabus.')
     }
   }
 
   const handleFileUpload = async () => {
     if (!selectedFile) return
+
+    const apiKey = getGeminiKey()
+    if (!apiKey) {
+      setPdfError(NEED_KEY)
+      return
+    }
     
     setIsLoading(true)
     setShowFileUpload(false)
     
     setMessages(prev => [
       ...prev, 
-      { id: Date.now().toString(), role: 'user', content: `Analyzing file: ${selectedFile.name}` }
+      { id: `${Date.now()}-u`, role: 'user', content: `Analyzing file: ${selectedFile.name}` }
     ])
 
     try {
       const formData = new FormData()
       formData.append('file', selectedFile)
-      formData.append('action', 'analyze_syllabus')
       
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/chat`, {
+      const response = await fetch('/api/analyze-syllabus', {
         method: 'POST',
+        headers: { 'x-gemini-key': apiKey },
         body: formData,
       })
 
       if (!response.ok) {
-        throw new Error('Failed to analyze syllabus')
+        throw new Error(await readError(response, 'Sorry, there was an error analyzing your syllabus file.'))
       }
 
       const result = await response.json()
@@ -180,50 +218,45 @@ export default function ChatPanel({ isOpen, onToggle }: ChatPanelProps) {
       
       setMessages(prev => [
         ...prev, 
-        { id: Date.now().toString(), role: 'assistant', content: 'Syllabus analysis complete. Please review the extracted information.' }
+        { id: `${Date.now()}-a`, role: 'assistant', content: 'Syllabus analysis complete. Please review the extracted information.' }
       ])
     } catch (error) {
       console.error('Error analyzing syllabus:', error)
+      const content = error instanceof Error && error.message ? error.message : 'Sorry, there was an error analyzing your syllabus file.'
       setMessages(prev => [
         ...prev, 
         { 
-          id: Date.now().toString(), 
+          id: `${Date.now()}-e`, 
           role: 'assistant', 
-          content: 'Sorry, there was an error analyzing your syllabus file.' 
+          content
         }
       ])
+      setSelectedFile(null)
+      setPdfDataUrl(null)
     } finally {
       setIsLoading(false)
     }
   }
 
   const handleSaveData = async () => {
+    if (!editedPdfData) return
     setIsLoading(true)
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/save_syllabus_data`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ data: editedPdfData }),
+      // Saved to this browser's localStorage; the dashboard pages update right away.
+      saveCourse({
+        ...editedPdfData,
+        schedule: editedPdfData.schedule.map(item => ({ ...item, description: item.description ?? '' })),
       })
-
-      if (!response.ok) {
-        throw new Error('Failed to save syllabus data')
-      }
-
-      // Refresh the student data after successful save
-      await refetch()
 
       setMessages(prev => [
         ...prev, 
-        { id: Date.now().toString(), role: 'assistant', content: 'Course information has been saved successfully!' }
+        { id: `${Date.now()}-a`, role: 'assistant', content: `Saved ${editedPdfData.course_name || 'the course'} to your dashboard (stored in this browser). Check Schedule, Tasks and Progress.` }
       ])
     } catch (error) {
       console.error('Error saving syllabus data:', error)
       setMessages(prev => [
         ...prev, 
-        { id: Date.now().toString(), role: 'assistant', content: 'Sorry, there was an error saving the course information.' }
+        { id: `${Date.now()}-e`, role: 'assistant', content: 'Sorry, there was an error saving the course information.' }
       ])
     } finally {
       setIsLoading(false)
@@ -313,6 +346,9 @@ export default function ChatPanel({ isOpen, onToggle }: ChatPanelProps) {
             </div>
 
             <div className="p-4 border-t border-gray-200 dark:border-gray-800">
+              <div className="mb-2">
+                <ApiKeyPanel />
+              </div>
               <div className="flex items-center mb-2">
                 <Button 
                   variant="outline" 
@@ -323,6 +359,17 @@ export default function ChatPanel({ isOpen, onToggle }: ChatPanelProps) {
                   <Upload size={14} className="mr-1" />
                   Upload Syllabus PDF
                 </Button>
+              </div>
+              <div className="mb-2 text-center">
+                <button
+                  type="button"
+                  className="text-[11px] text-gray-500 dark:text-gray-400 underline"
+                  onClick={() => {
+                    if (window.confirm('Remove your saved courses and tasks and go back to the sample student?')) resetToSample()
+                  }}
+                >
+                  Reset dashboard to the sample student
+                </button>
               </div>
               <form onSubmit={handleSendMessage} className="flex gap-2">
                 <Input
@@ -366,6 +413,17 @@ export default function ChatPanel({ isOpen, onToggle }: ChatPanelProps) {
                   {selectedFile ? selectedFile.name : "Click to select a PDF file"}
                 </label>
               </div>
+              <p className="text-xs text-gray-600 dark:text-gray-400">
+                No syllabus handy?{" "}
+                <button type="button" className="underline" onClick={loadSampleSyllabus}>
+                  Use the sample syllabus
+                </button>{" "}
+                (a made-up CS course,{" "}
+                <a href={SAMPLE_PDF} target="_blank" rel="noreferrer" className="underline">view PDF</a>).
+              </p>
+              {pdfError && (
+                <p className="text-xs text-red-600 dark:text-red-400">{pdfError}</p>
+              )}
               <div className="flex justify-end gap-2">
                 <Button variant="outline" onClick={() => setShowFileUpload(false)}>
                   Cancel
@@ -503,7 +561,7 @@ export default function ChatPanel({ isOpen, onToggle }: ChatPanelProps) {
                               type="number"
                               value={value || 0}
                               onChange={(e) => {
-                                const newDistribution = {...editedPdfData.marks_distribution, [key]: parseInt(e.target.value)}
+                                const newDistribution = {...editedPdfData.marks_distribution, [key]: Number(e.target.value) || 0}
                                 setEditedPdfData({...editedPdfData, marks_distribution: newDistribution})
                               }}
                             />

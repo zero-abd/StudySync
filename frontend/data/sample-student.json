@@ -1,0 +1,281 @@
+{
+  "email": "student@university.edu",
+  "name": "Alex Johnson",
+  "semester_1": {
+    "term": "Spring 2025",
+    "courses": [
+      {
+        "course_name": "MATH 3350 Higher Mathematics for Engineers & Scientists",
+        "instructor_name": "Amanda N. Laubmeier",
+        "start_time": "02:00 PM",
+        "end_time": "03:20 PM",
+        "grade": "",
+        "current_marks": {},
+        "marks_distribution": {
+          "assignment": 15,
+          "exam": 60,
+          "project": 10,
+          "quiz": 0
+        },
+        "schedule": [
+          {
+            "date": "2025-01-16",
+            "description": "ODE basics (1.3, 2.8)",
+            "title": "worksheet",
+            "type": "assignment"
+          },
+          {
+            "date": "2025-01-21",
+            "description": "ODE Behavior",
+            "title": "Video Due 1",
+            "type": "class"
+          },
+          {
+            "date": "2025-01-23",
+            "description": "Numerical Approximations",
+            "title": "Video Due 2",
+            "type": "class"
+          },
+          {
+            "date": "2025-01-28",
+            "description": "Separable ODEs",
+            "title": "Video Due 3",
+            "type": "class"
+          },
+          {
+            "date": "2025-01-30",
+            "description": "Linear ODEs",
+            "title": "Video Due 4",
+            "type": "class"
+          },
+          {
+            "date": "2025-01-31",
+            "description": "Drop deadline Jan. 31",
+            "title": "Drop deadline",
+            "type": "other"
+          },
+          {
+            "date": "2025-02-04",
+            "description": "Exact Equations",
+            "title": "Video Due 5",
+            "type": "class"
+          },
+          {
+            "date": "2025-02-06",
+            "description": "Extra review day",
+            "title": "Extra review day",
+            "type": "class"
+          },
+          {
+            "date": "2025-02-07",
+            "description": "Project 1 due Feb. 7",
+            "title": "Project 1",
+            "type": "project"
+          },
+          {
+            "date": "2025-02-11",
+            "description": "Spring/Mass systems",
+            "title": "Exam 1",
+            "type": "exam"
+          },
+          {
+            "date": "2025-02-13",
+            "description": "Project 2 assigned",
+            "title": "worksheet",
+            "type": "assignment"
+          },
+          {
+            "date": "2025-02-18",
+            "description": "Linear Equations",
+            "title": "Video Due 6",
+            "type": "class"
+          },
+          {
+            "date": "2025-02-20",
+            "description": "Homog. Const. Coeff.",
+            "title": "Video Due 7",
+            "type": "class"
+          },
+          {
+            "date": "2025-02-25",
+            "description": "Reduction of Order",
+            "title": "Video Due 8",
+            "type": "class"
+          },
+          {
+            "date": "2025-02-27",
+            "description": "Undetermined Coeff.",
+            "title": "Video Due 9",
+            "type": "class"
+          },
+          {
+            "date": "2025-03-04",
+            "description": "Variation of Parameters",
+            "title": "Video Due 10",
+            "type": "class"
+          },
+          {
+            "date": "2025-03-06",
+            "description": "Extra review day",
+            "title": "Extra review day",
+            "type": "class"
+          },
+          {
+            "date": "2025-03-07",
+            "description": "Project 2 due Mar. 7",
+            "title": "Project 2",
+            "type": "project"
+          },
+          {
+            "date": "2025-03-11",
+            "description": "Exam 2",
+            "title": "Exam 2",
+            "type": "exam"
+          },
+          {
+            "date": "2025-03-13",
+            "description": "Optional: Exam Makeup Day",
+            "title": "Optional: Exam Makeup Day",
+            "type": "other"
+          },
+          {
+            "date": "2025-03-25",
+            "description": "Intro to Project 3",
+            "title": "slides",
+            "type": "assignment"
+          },
+          {
+            "date": "2025-03-27",
+            "description": "Laplace Transform (6.1-6.2)",
+            "title": "worksheet",
+            "type": "assignment"
+          },
+          {
+            "date": "2025-04-01",
+            "description": "Inverse Laplace (6.1-6.2)",
+            "title": "Video Due 12",
+            "type": "class"
+          },
+          {
+            "date": "2025-04-03",
+            "description": "Translation (6.3-6.4)",
+            "title": "Video Due 13",
+            "type": "class"
+          },
+          {
+            "date": "2025-04-08",
+            "description": "Operations (6.6)",
+            "title": "Video Due 14",
+            "type": "class"
+          },
+          {
+            "date": "2025-04-10",
+            "description": "Dirac Delta (6.5)",
+            "title": "Video Due 15",
+            "type": "class"
+          },
+          {
+            "date": "2025-04-15",
+            "description": "Extra review day",
+            "title": "Extra review day",
+            "type": "class"
+          },
+          {
+            "date": "2025-04-17",
+            "description": "Series Basics",
+            "title": "Video Due 16",
+            "type": "class"
+          },
+          {
+            "date": "2025-04-18",
+            "description": "Project 3 due Apr. 18",
+            "title": "Project 3",
+            "type": "project"
+          },
+          {
+            "date": "2025-04-22",
+            "description": "Series Solutions (5.2-5.3)",
+            "title": "Video Due 17",
+            "type": "class"
+          },
+          {
+            "date": "2025-04-24",
+            "description": "Extra review day",
+            "title": "Extra review day",
+            "type": "class"
+          },
+          {
+            "date": "2025-04-22",
+            "description": "Apr. 21 holiday - HW due Apr. 22",
+            "title": "HW due Apr. 22",
+            "type": "other"
+          },
+          {
+            "date": "2025-04-22",
+            "description": "Final drop date Apr. 22",
+            "title": "Final drop date",
+            "type": "other"
+          },
+          {
+            "date": "2025-04-29",
+            "description": "Exam 3",
+            "title": "Exam 3",
+            "type": "exam"
+          },
+          {
+            "date": "2025-05-01",
+            "description": "Final Presentations",
+            "title": "Final Presentations",
+            "type": "other"
+          },
+          {
+            "date": "2025-05-06",
+            "description": "Final Presentations",
+            "title": "Final Presentations",
+            "type": "other"
+          },
+          {
+            "date": "2025-05-10",
+            "description": "Optional: Exam Makeup Day Saturday 1:30PM-4:00PM",
+            "title": "Optional: Exam Makeup Day",
+            "type": "other"
+          }
+        ]
+      },
+      {
+        "course_name": "Data Structures",
+        "instructor_name": "Ying Liu",
+        "start_time": "11:00 AM",
+        "end_time": "11:50 AM",
+        "grade": "",
+        "current_marks": {},
+        "marks_distribution": {
+          "assignment": 40,
+          "exam": 30,
+          "project": 0,
+          "quiz": 15
+        },
+        "schedule": [
+          {
+            "date": "2025-02-28",
+            "description": "Tentatively on Feb 28th (Friday) in class",
+            "title": "Midterm exam I",
+            "type": "exam"
+          },
+          {
+            "date": "2025-03-28",
+            "description": "Tentatively on March 28th (Friday) in class",
+            "title": "Midterm exam II",
+            "type": "exam"
+          },
+          {
+            "date": "2025-05-08",
+            "description": "May 8 (Thursday) 1:30p.m. to 4:00 p.m. in classroom, no make-up exam",
+            "title": "Final exam",
+            "type": "exam"
+          }
+        ]
+      }
+    ]
+  }
+}

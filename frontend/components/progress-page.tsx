@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useStudentData } from "@/hooks/use-student-data"
+import { useStudentData, type Course, type ScheduleItem } from "@/hooks/use-student-data"
 import { Button } from "@/components/ui/button"
 import { BarChart, CheckSquare, AlertCircle, BookOpen, PieChart } from "lucide-react"
 
@@ -73,7 +73,7 @@ export default function ProgressPage() {
       // Get all semester courses
       for (const key in studentData) {
         if (key.startsWith("semester_") && studentData[key].courses) {
-          studentData[key].courses.forEach((course: any) => {
+          studentData[key].courses.forEach((course: Course) => {
             // Initialize task tracking for this course
             if (!courseTasksMap[course.course_name]) {
               courseTasksMap[course.course_name] = { completed: 0, total: 0 }
@@ -105,7 +105,7 @@ export default function ProgressPage() {
             let courseTotalTasks = 0
             
             if (course.schedule) {
-              course.schedule.forEach((item: any) => {
+              course.schedule.forEach((item: ScheduleItem) => {
                 if (['assignment', 'exam', 'quiz', 'project'].includes(item.type)) {
                   const taskId = `${course.course_name}-${item.title}-${item.date}`
                   courseTotalTasks++

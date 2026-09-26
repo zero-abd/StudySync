@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useStudentData } from "@/hooks/use-student-data"
+import { useStudentData, type Course, type ScheduleItem } from "@/hooks/use-student-data"
+import { parseDate, toDateKey } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Calendar, CheckSquare, Clock, AlertCircle, ArrowUp, ArrowDown, Filter, Plus, X } from "lucide-react"
 
@@ -56,7 +57,7 @@ export default function TasksPage() {
     title: '',
     description: '',
     type: 'assignment',
-    date: new Date().toISOString().split('T')[0],
+    date: toDateKey(new Date()),
     priority: 'medium'
   })
 
@@ -81,18 +82,18 @@ export default function TasksPage() {
       // Get all semester courses
       for (const key in studentData) {
         if (key.startsWith("semester_") && studentData[key].courses) {
-          studentData[key].courses.forEach((course: any) => {
+          studentData[key].courses.forEach((course: Course) => {
             if (!courseNames.includes(course.course_name)) {
               courseNames.push(course.course_name)
             }
             
             if (course.schedule) {
-              course.schedule.forEach((item: any) => {
+              course.schedule.forEach((item: ScheduleItem) => {
                 if (['assignment', 'exam', 'quiz', 'project'].includes(item.type)) {
                   types.add(item.type)
                   
                   // Determine priority based on type and date
-                  const itemDate = new Date(item.date)
+                  const itemDate = parseDate(item.date)
                   const now = new Date()
                   const daysUntil = Math.ceil((itemDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
                   
@@ -111,7 +112,7 @@ export default function TasksPage() {
                     title: item.title,
                     description: item.description || '',
                     type: item.type,
-                    date: new Date(item.date),
+                    date: parseDate(item.date),
                     completed: storedTaskData.completedTaskIds.includes(taskId),
                     priority
                   })
@@ -127,7 +128,7 @@ export default function TasksPage() {
         storedTaskData.customTasks.forEach(customTask => {
           loadedTasks.push({
             ...customTask,
-            date: new Date(customTask.date),
+            date: parseDate(customTask.date),
             completed: storedTaskData.completedTaskIds.includes(customTask.id),
             isCustom: true
           })
@@ -166,7 +167,7 @@ export default function TasksPage() {
         .filter(task => task.isCustom)
         .map(task => ({
           ...task,
-          date: task.date.toISOString().split('T')[0]
+          date: toDateKey(task.date)
         }))
       
       const dataToStore: StoredTasks = { 
@@ -201,7 +202,7 @@ export default function TasksPage() {
       title: newTask.title,
       description: newTask.description,
       type: newTask.type,
-      date: new Date(newTask.date),
+      date: parseDate(newTask.date),
       completed: false,
       priority: newTask.priority,
       isCustom: true
@@ -229,7 +230,7 @@ export default function TasksPage() {
       title: '',
       description: '',
       type: 'assignment',
-      date: new Date().toISOString().split('T')[0],
+      date: toDateKey(new Date()),
       priority: 'medium'
     })
     
@@ -261,7 +262,7 @@ export default function TasksPage() {
   }
 
   // Update filter option
-  const updateFilter = (key: keyof FilterOptions, value: any) => {
+  const updateFilter = <K extends keyof FilterOptions>(key: K, value: FilterOptions[K]) => {
     setFilterOptions(prev => ({
       ...prev,
       [key]: prev[key] === value ? null : value // Toggle if already selected
@@ -431,7 +432,7 @@ export default function TasksPage() {
                     <select
                       className="w-full p-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm"
                       value={newTask.priority}
-                      onChange={(e) => handleNewTaskChange('priority', e.target.value as any)}
+                      onChange={(e) => handleNewTaskChange('priority', e.target.value)}
                     >
                       <option value="high">High</option>
                       <option value="medium">Medium</option>
@@ -448,7 +449,7 @@ export default function TasksPage() {
                     className="w-full p-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm"
                     value={newTask.date}
                     onChange={(e) => handleNewTaskChange('date', e.target.value)}
-                    min={new Date().toISOString().split('T')[0]}
+                    min={toDateKey(new Date())}
                     required
                   />
                 </div>

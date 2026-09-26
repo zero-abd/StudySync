@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { useStudentData } from "@/hooks/use-student-data"
+import { useStudentData, type Course, type CourseItem, type ScheduleItem } from "@/hooks/use-student-data"
+import { parseDate } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Calendar, Grid3X3, ListFilter, ChevronLeft, ChevronRight } from "lucide-react"
 
@@ -28,7 +29,7 @@ export default function SchedulePage() {
   // Get next working day (skip weekend)
   const getNextWorkingDay = (offset = 0) => {
     const today = new Date()
-    let daysToAdd = 1 + offset // Start with tomorrow + any offset
+    const daysToAdd = 1 + offset // Start with tomorrow + any offset
     
     // Clone the date object to avoid modifying the original
     const nextDay = new Date(today)
@@ -76,11 +77,11 @@ export default function SchedulePage() {
   const courses = getSemesterCourses()
   
   const getAllScheduleItems = () => {
-    const scheduleItems: any[] = []
+    const scheduleItems: CourseItem[] = []
     
-    courses.forEach((course: any) => {
+    courses.forEach((course: Course) => {
       if (course.schedule) {
-        course.schedule.forEach((item: any) => {
+        course.schedule.forEach((item: ScheduleItem) => {
           scheduleItems.push({
             ...item,
             courseName: course.course_name,
@@ -91,14 +92,14 @@ export default function SchedulePage() {
       }
     })
     
-    return scheduleItems.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    return scheduleItems.sort((a, b) => parseDate(a.date).getTime() - parseDate(b.date).getTime())
   }
 
   const scheduleItems = getAllScheduleItems()
 
   // Format date without year
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
+  const formatDate = (value: string | Date) => {
+    const date = typeof value === "string" ? parseDate(value) : value
     return date.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
   }
   
@@ -118,10 +119,10 @@ export default function SchedulePage() {
   
   // Group schedule items by month
   const groupByMonth = () => {
-    const grouped: Record<string, any[]> = {}
+    const grouped: Record<string, CourseItem[]> = {}
     
     scheduleItems.forEach(item => {
-      const date = new Date(item.date)
+      const date = parseDate(item.date)
       const monthYear = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
       
       if (!grouped[monthYear]) {
@@ -136,15 +137,15 @@ export default function SchedulePage() {
   
   // Group schedule items by week
   const groupByWeek = () => {
-    const grouped: Record<string, any[]> = {}
+    const grouped: Record<string, CourseItem[]> = {}
     const oneDay = 24 * 60 * 60 * 1000 // milliseconds in one day
     
     // Get the earliest and latest dates
     if (scheduleItems.length === 0) return grouped
     
-    const sortedItems = [...scheduleItems].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-    const earliestDate = new Date(sortedItems[0].date)
-    const latestDate = new Date(sortedItems[sortedItems.length - 1].date)
+    const sortedItems = [...scheduleItems].sort((a, b) => parseDate(a.date).getTime() - parseDate(b.date).getTime())
+    const earliestDate = parseDate(sortedItems[0].date)
+    const latestDate = parseDate(sortedItems[sortedItems.length - 1].date)
     
     // Find the Sunday before or on the earliest date
     const startDate = new Date(earliestDate)
@@ -166,7 +167,7 @@ export default function SchedulePage() {
       
       // Add items for this week
       scheduleItems.forEach(item => {
-        const itemDate = new Date(item.date)
+        const itemDate = parseDate(item.date)
         if (itemDate >= weekStart && itemDate <= weekEnd) {
           grouped[weekLabel].push(item)
         }
@@ -181,10 +182,10 @@ export default function SchedulePage() {
   
   // Group schedule items for month view (by date within each month)
   const groupByMonthDays = () => {
-    const grouped: Record<string, Record<string, any[]>> = {}
+    const grouped: Record<string, Record<string, CourseItem[]>> = {}
     
     scheduleItems.forEach(item => {
-      const date = new Date(item.date)
+      const date = parseDate(item.date)
       const monthYear = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
       const day = date.getDate().toString()
       

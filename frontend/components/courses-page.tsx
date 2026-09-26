@@ -1,6 +1,7 @@
 "use client"
 
 import { useStudentData } from "@/hooks/use-student-data"
+import { parseDate } from "@/lib/utils"
 import { useState, useEffect } from "react"
 
 // Define a type for the course object and marks distribution
@@ -217,7 +218,7 @@ export default function CoursesPage() {
   const courses = getSemesterCourses()
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
+    const date = parseDate(dateString)
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
   }
 
