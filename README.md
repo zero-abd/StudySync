@@ -1,5 +1,7 @@
 # StudySync 📚
 
+**Live demo: https://studysync-abd.vercel.app** (bring your own free Gemini API key; a sample syllabus is built in)
+
 **StudySync** is a comprehensive student dashboard application that makes it super easy to sync different courses, assignments, and exams into a single unified portal by simply uploading PDF syllabi. Unlike traditional LMS platforms like Canvas and Blackboard that often fail to provide centralized course management (because professors don't maintain them properly), StudySync automatically extracts and organizes all your academic information from syllabus PDFs using AI.
 
 <img width="1603" height="997" alt="image" src="https://github.com/user-attachments/assets/45c48b9e-06a6-4729-853f-64a0b5ad70dd" />
@@ -12,6 +14,17 @@
 - **📅 Smart Scheduling**: Navigate through your daily class schedules with an intuitive interface
 - **💬 AI Assistant**: Chat with an intelligent assistant for study tips, scheduling help, and academic guidance
 - **🔄 Real-time Sync**: Automatically sync course data with Firebase for persistence across devices
+
+## 🌐 Hosted version (Vercel)
+
+The live demo runs from `frontend/` alone:
+
+- **Syllabus analysis and chat** are Next.js route handlers (`app/api/analyze-syllabus`, `app/api/chat`) that call the Gemini API.
+- **Bring your own key.** Paste a free key from [Google AI Studio](https://aistudio.google.com/apikey) into the panel on the right. It stays in your browser tab (sessionStorage) and is sent only with your own requests. The server never stores or logs it.
+- **Your dashboard is saved in your browser** (localStorage). It starts with a sample student; "Reset dashboard to the sample student" clears it.
+- **No syllabus handy?** Use the built-in sample syllabus (`frontend/public/sample-syllabus.pdf`, a made-up course).
+
+Run it locally with `cd frontend && npm install && npm run dev`. No environment variables are needed. The Flask backend below is the original hackathon version (Vertex AI + Firebase) and is not used by the hosted site.
 
 ## 🏗️ Architecture
 
