@@ -7,7 +7,8 @@ import { useMediaQuery } from "@/hooks/use-media-query"
 import { usePathname } from "next/navigation"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useStudentData } from "@/hooks/use-student-data"
+import { useStudentData, type Course, type CourseItem, type ScheduleItem } from "@/hooks/use-student-data"
+import { parseDate, toDateKey } from "@/lib/utils"
 
 interface DashboardProps {
   children?: ReactNode;
@@ -42,7 +43,7 @@ export default function Dashboard({ children }: DashboardProps) {
 
   const getNextWorkingDay = (offset = 0) => {
     const today = new Date()
-    let daysToAdd = 1 + offset
+    const daysToAdd = 1 + offset
     
     const nextDay = new Date(today)
     nextDay.setDate(today.getDate() + daysToAdd)
@@ -72,10 +73,10 @@ export default function Dashboard({ children }: DashboardProps) {
   const getScheduleForDay = (date: Date) => {
     if (!studentData) return []
     
-    const formattedDate = date.toISOString().split('T')[0] // Format: YYYY-MM-DD
+    const formattedDate = toDateKey(date) // Format: YYYY-MM-DD
     
     // Find all courses
-    const courses: any[] = []
+    const courses: Course[] = []
     for (const key in studentData) {
       if (key.startsWith("semester_") && studentData[key].courses) {
         courses.push(...studentData[key].courses)
@@ -83,10 +84,10 @@ export default function Dashboard({ children }: DashboardProps) {
     }
     
     // Get items specifically scheduled for this date
-    const dayItems: any[] = []
+    const dayItems: CourseItem[] = []
     courses.forEach(course => {
       if (course.schedule) {
-        course.schedule.forEach((item: any) => {
+        course.schedule.forEach((item: ScheduleItem) => {
           if (item.date === formattedDate) {
             dayItems.push({
               ...item,
@@ -109,9 +110,9 @@ export default function Dashboard({ children }: DashboardProps) {
     const futureDate = new Date()
     futureDate.setDate(now.getDate() + 60) // Get deadlines up to 60 days in the future
     
-    const deadlines: any[] = []
+    const deadlines: (Omit<CourseItem, "date"> & { date: Date })[] = []
     
-    const courses: any[] = []
+    const courses: Course[] = []
     for (const key in studentData) {
       if (key.startsWith("semester_") && studentData[key].courses) {
         courses.push(...studentData[key].courses)
@@ -120,8 +121,8 @@ export default function Dashboard({ children }: DashboardProps) {
     
     courses.forEach(course => {
       if (course.schedule) {
-        course.schedule.forEach((item: any) => {
-          const itemDate = new Date(item.date)
+        course.schedule.forEach((item: ScheduleItem) => {
+          const itemDate = parseDate(item.date)
           if (
             itemDate >= now && 
             itemDate <= futureDate && 

@@ -1,6 +1,7 @@
 "use client"
 
-import { useStudentData } from "@/hooks/use-student-data"
+import { useStudentData, type Course, type CourseItem, type ScheduleItem } from "@/hooks/use-student-data"
+import { parseDate } from "@/lib/utils"
 
 export default function HomePage() {
   const { studentData, loading, error } = useStudentData()
@@ -37,24 +38,24 @@ export default function HomePage() {
   
   const getUpcomingDeadlines = () => {
     const today = new Date()
-    const deadlines: any[] = []
+    const deadlines: CourseItem[] = []
     const relevantTypes = ['exam', 'assignment', 'project']
     
-    courses.forEach((course: any) => {
+    courses.forEach((course: Course) => {
       if (course.schedule) {
-        course.schedule.forEach((item: any) => {
-          const date = new Date(item.date)
+        course.schedule.forEach((item: ScheduleItem) => {
+          const date = parseDate(item.date)
           if (date >= today && relevantTypes.includes(item.type.toLowerCase())) {
             deadlines.push({
               ...item,
-              courseName: course.name
+              courseName: course.course_name
             })
           }
         })
       }
     })
     
-    return deadlines.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).slice(0, 5)
+    return deadlines.sort((a, b) => parseDate(a.date).getTime() - parseDate(b.date).getTime()).slice(0, 5)
   }
   
   const getNextWorkingDayClasses = () => {
@@ -71,20 +72,23 @@ export default function HomePage() {
       date: tomorrow,
       dayName: tomorrow.toLocaleDateString('en-US', { weekday: 'long' }),
       formattedDate: tomorrow.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-      classes: [] as any[]
+      classes: [] as CourseItem[]
     }
     
     // Get class schedule for all courses on that day
-    courses.forEach((course: any) => {
+    courses.forEach((course: Course) => {
       if (course.schedule) {
-        course.schedule.forEach((item: any) => {
-          const itemDate = new Date(item.date)
+        course.schedule.forEach((item: ScheduleItem) => {
+          const itemDate = parseDate(item.date)
           if (itemDate.getDate() === nextDay.date.getDate() && 
               itemDate.getMonth() === nextDay.date.getMonth() && 
               itemDate.getFullYear() === nextDay.date.getFullYear()) {
             nextDay.classes.push({
               ...item,
-              courseName: course.name
+              courseName: course.course_name,
+              time: item.time || (item.type === 'class' && course.start_time
+                ? `${course.start_time}${course.end_time ? ` - ${course.end_time}` : ''}`
+                : undefined)
             })
           }
         })
@@ -93,8 +97,8 @@ export default function HomePage() {
     
     // Sort by time
     nextDay.classes.sort((a, b) => {
-      const timeA = a.time ? new Date(`2000-01-01 ${a.time}`).getTime() : 0
-      const timeB = b.time ? new Date(`2000-01-01 ${b.time}`).getTime() : 0
+      const timeA = a.time ? new Date(`2000-01-01 ${a.time.split(' - ')[0]}`).getTime() || 0 : 0
+      const timeB = b.time ? new Date(`2000-01-01 ${b.time.split(' - ')[0]}`).getTime() || 0 : 0
       return timeA - timeB
     })
     
@@ -103,7 +107,7 @@ export default function HomePage() {
   
   const getDaysRemaining = (dateString: string) => {
     const today = new Date()
-    const itemDate = new Date(dateString)
+    const itemDate = parseDate(dateString)
     const diffTime = Math.abs(itemDate.getTime() - today.getTime())
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
     

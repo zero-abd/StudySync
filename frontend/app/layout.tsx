@@ -7,8 +7,8 @@ import { ThemeProvider } from "@/components/theme-provider"
 const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Student Dashboard",
-  description: "Track your classes, deadlines, and progress",
+  title: "StudySync",
+  description: "Turn syllabus PDFs into a schedule, tasks and grade weights with Gemini.",
 }
 
 export default function RootLayout({
